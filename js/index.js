@@ -22,17 +22,17 @@
 
 // __________________item 2_________________
 
-console.log('start') //выполняются в своем порядке(синхронном)
+// console.log('start') //выполняются в своем порядке(синхронном)
 
-setTimeout(() => {
-    console.log('setTimeout')
-})
+// setTimeout(() => {
+//     console.log('setTimeout')
+// })
 
-Promise.resolve().then(() => {
-    console.log('resolve')
-})
+// Promise.resolve().then(() => {
+//     console.log('resolve')
+// })
 
-console.log('end')
+// console.log('end')
 
 // Ассинхронные операции:
 
@@ -67,4 +67,53 @@ console.log('end')
 // 32) resolve
 // 28) setTimeout
 
+// __________________item 3_________________
 
+// setTimeout(() => {
+//     console.log('timeout')
+// }, 0);
+
+// const p = new Promise((resolve, reject) => {
+//     console.log('Promise creation');
+//     resolve()
+// })
+
+// const p2 = new Promise((resolve, reject) => {
+//     console.log(123)
+// })
+// p.then(() => {
+//     console.log('Promise resolving');
+// })
+
+// console.log('End')
+
+// console.log('p2 =>>', p2)
+
+// начнем по порядку:
+// 73 line) - setTimeout ассинхронная операция, идет в macroStack, и ожидает окончание синхронного кода, после попадет в стэк и выполняется
+// 77 line) - создание промиса (попадет в стэк) выполнится
+// 83 line) - аналогично строке сверху
+// 86 line) - обработка промиса(), следовательно это попадает в microStack и ждет завершения синхронного кода
+// 89 line) - синхронная операция - выполнится без колебаний
+// 91 line) - так как в console.log coдержит лишь переменную промиса и никак ее 
+//  не обрабатывает то вывод будет сразу же
+
+// что будет в консоле:
+// 1  Promise creation  -  77 line) создается промис и console.log выполнятся
+// 2. 123               -  82 line) синронная операция
+// 3. End               -  89 line) синронная операция
+// 4. p2 =>> {promise}  -  91 line) - так как в console.log coдержит лишь переменную промиса и никак ее 
+//  не обрабатывает то вывод будет сразу же
+// 5. Promise resolving - 86 line) обработка промиса, следовательно это попадает в microStack и по завершения синхронного кода попадет в стэк 
+// и выполнится первым нежеле timeout 
+// 6. timeout           -  73 line)  попадет в стэк самым последней тк. macroStack , а приоретный вывод у microstack
+
+
+
+// Вывод будет таким
+// Promise creation
+// 123
+// End
+// p2 =>> Promise {<pending>}
+//Promise resolving
+// timeout
